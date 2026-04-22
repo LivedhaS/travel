@@ -746,7 +746,6 @@ def main():
 
     query, search, destination, origin, links = render_form()
     render_features()
-
     if search:
         if origin.strip() and destination.strip():
             with st.spinner("✦ Crafting your perfect itinerary..."):
