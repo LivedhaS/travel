@@ -232,4 +232,7 @@ def generate_map(
 
 
 if __name__ == "__main__":
-    mcp.run()
+    import os
+    os.environ["FASTMCP_HOST"] = "127.0.0.1"
+    os.environ["FASTMCP_PORT"] = "8000"
+    mcp.run(transport="sse")
