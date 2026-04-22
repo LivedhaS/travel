@@ -630,27 +630,32 @@ def render_travel_plan(content):
                 <div style="color:white;font-size:1rem;line-height:1.7;">{text}</div>
             </div>""", unsafe_allow_html=True)
 
-        # ── DAILY ITINERARY ──
         elif re.match(r'Day \d+', section):
-            day_match  = re.match(r'(Day \d+:[^\n]+)', section)
-            day_title  = day_match.group(1) if day_match else "Day"
-            day_body   = section[len(day_title):].strip()
-            activities = [l.strip().lstrip("* ") for l in day_body.split("\n")
-                          if l.strip() and l.strip().startswith("*")]
-            acts_html  = "".join([
+            day_match = re.match(r'(Day \d+:[^\n]*)', section)
+            day_title = day_match.group(1) if day_match else "Day"
+            day_body = section[len(day_title):].strip()
+            lines = [l.strip() for l in day_body.split("\n") if l.strip()]
+            activities = []
+            for l in lines:
+                if l.startswith("*"):
+                    activities.append(l.lstrip("* ").strip())
+                else:
+                    activities.append(l)  # ← accept normal text too
+            acts_html = "".join([
                 f'<div style="padding:0.5rem 0;border-bottom:1px solid #f1f5f9;'
                 f'color:#475569;font-size:0.9rem;">• {a}</div>'
                 for a in activities
-            ])
+                ])
             st.markdown(f"""
             <div style="background:white;border:1.5px solid #e2e8f0;border-radius:16px;
-                        padding:1.2rem 1.5rem;margin-bottom:1rem;
+                         padding:1.2rem 1.5rem;margin-bottom:1rem;
                         box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-                <div style="font-weight:700;color:#6366f1;font-size:0.95rem;
-                            margin-bottom:0.8rem;">📅 {day_title}</div>
-                {acts_html}
-            </div>""", unsafe_allow_html=True)
+                    <div style="font-weight:700;color:#6366f1;font-size:0.95rem;
+                         margin-bottom:0.8rem;">📅 {day_title}</div>
+                 {acts_html}
+             </div>""", unsafe_allow_html=True)
 
+        
         # ── NEXT STEPS ──
         elif section.startswith("👉"):
             steps = [l.strip() for l in section.split("\n") if re.match(r'\d+\.', l.strip())]
